@@ -1,0 +1,9 @@
+# PSP Homebrew Dev Notes
+> Real-hardware quirks of the Sony PSP (Allegrex CPU, firmware, memory stick IO, PPSSPP differences) with workarounds. Tested on PSP 3001, 6.61 PRO-C, pspdev GCC 15.2.
+
+- [CPU: lwl/lwr hazard](topics/cpu-allegrex.md): an instruction that uses an lwl/lwr result immediately gets the raw aligned word. Fix: -fdisable-tree-bswap -fno-store-merging -fno-tree-vectorize, aligned arrays, tools/lwlr_hazards.py. PPSSPP doesn't reproduce it.
+- [File IO](topics/filesystem-io.md): fopen relative paths fail on hardware; use sceIoOpen with absolute ms0:/ paths. sceIoRename doesn't overwrite; save via .tmp/.bak.
+- [Emulator vs hardware](topics/emulator-vs-hardware.md): PPSSPP has no cache model (optimistic timing), allows misaligned access, skips Media Engine code, and logs crashes that freeze a real PSP.
+- [Debugging](topics/debugging.md): crash = freeze, then power off ~20 s later; pspDebugInstallErrorHandler didn't work on 6.61 PRO-C; use PSPLink (usbhostfs_pc + pspsh), subtract TextAddr, psp-addr2line.
+- [XMB assets](topics/xmb-assets.md): SND0.AT3 plays only from atracdenc 0.2.3 with the RIFF size fixed to filesize-8.
+- [Kernel buttons](topics/buttons-kernel.md): the note button needs a kernel-mode PRX thread.
