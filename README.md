@@ -40,3 +40,7 @@ Found something else? Issues and pull requests are welcome. Please say which PSP
 firmware you saw it on.
 
 For AI agents and tools: [llms.txt](llms.txt) has a one-line summary of every entry.
+
+## License
+
+Public domain ([CC0 1.0](LICENSE)). Use it however you like, no credit needed.
