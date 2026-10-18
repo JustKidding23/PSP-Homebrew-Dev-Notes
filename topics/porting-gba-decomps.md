@@ -28,3 +28,15 @@ Traps found while bringing pret's decomps over to the PSP as native code (not em
 - `Tools/gbaref/gbaref ROM INPUT OUTDIR` (built on mGBA 0.10.5's core) runs the original ROM with
   the same `<frames> <buttons>` input file as the ports' PPSSPP tests and writes PPM screenshots,
   so a port's frame can be compared with the real game's.
+
+### Writes and reads near address 0 crash the PSP, not the GBA
+- **Seen as:** FireRed showed the copyright screen, went black and the PSP turned off, but only once
+  a save existed.
+- **Cause:** reading the save at boot copies the boxes through `gPokemonStoragePtr` while it's still
+  NULL. On the GBA, 0x00000000-0x00003FFF is the BIOS, so the writes vanish. The wireless adapter
+  check at the main menu read registers through NULL the same way.
+- **Workaround:** set the pointer before the save is read (pret's Emerald does) and report no
+  wireless adapter. Expect more of these: test with a save, and in PPSSPP use the interpreter (`-i`),
+  which stops at the first bad read with its PC. The default JIT logs "Bad memory access detected
+  and ignored" with no PC and carries on, so the emulator keeps running where a PSP crashes.
+- **Found in:** Pokémon FireRed PSP, 2026-10-17.
