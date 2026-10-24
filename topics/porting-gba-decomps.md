@@ -40,3 +40,18 @@ Traps found while bringing pret's decomps over to the PSP as native code (not em
   which stops at the first bad read with its PC. The default JIT logs "Bad memory access detected
   and ignored" with no PC and carries on, so the emulator keeps running where a PSP crashes.
 - **Found in:** Pokémon FireRed PSP, 2026-10-17.
+
+### A division by 0 stops the game (`Exception - Breakpoint`, `break 0x7`)
+- **Seen as:** a freeze in the middle of a battle move (Spark in Pokémon FireRed). Under PSPLink:
+  `Exception - Breakpoint`, with the EPC on `break 0x1c00` (code 7) right after a `div`. PPSSPP
+  plays the same build fine: it logs `E BREAK!` and carries on.
+- **Cause:** for MIPS, GCC follows every integer division with a check that traps (`break 7`) when the
+  divisor is 0. The GBA's division by 0 just gives 0, and the retail games do divide by 0 in places
+  (Spark's sparks `% 0`; pokeemerald's `SAFE_DIV`/`SAFE_MOD` mark others, like the Master Ball's
+  catch odds).
+- **Workaround:** build with `-mno-check-zero-division`: the Allegrex's `div` by 0 doesn't trap.
+  Give known cases the GBA's result with `SAFE_DIV`/`SAFE_MOD`. To find the rest, build a test
+  version with the check and grep PPSSPP's log for `BREAK!`. libc and libgcc's 64-bit division
+  keep their own traps.
+- **Confirmed:** PSP 3001, 6.61 PRO-C, pspdev GCC 15.2; PPSSPP 1.20 doesn't stop.
+- **Found in:** Pokémon FireRed PSP, 2026-10-23.

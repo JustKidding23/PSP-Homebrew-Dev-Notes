@@ -8,4 +8,4 @@
 - [Performance](topics/performance.md): 30-fps frame-pacing trap with vsync + catch-up; measuring on hardware over PSPLink; GBA renderer cheap wins.
 - [XMB assets](topics/xmb-assets.md): SND0.AT3 plays only from atracdenc 0.2.3 with the RIFF size fixed to filesize-8.
 - [Kernel buttons](topics/buttons-kernel.md): the note button needs a kernel-mode PRX thread; stop it from the exit callback and have it check the game thread is alive, or it outlives the game and crashes the XMB.
-- [Porting GBA decomps](topics/porting-gba-decomps.md): GCC reorders globals the GBA code expects adjacent (use -fno-toplevel-reorder); BG2PA/PD and BG3PA/PD start at 0x100; GBA code writing near NULL crashes the PSP (PPSSPP JIT hides bad reads, use -i); gbaref for reference frames.
+- [Porting GBA decomps](topics/porting-gba-decomps.md): GCC reorders globals the GBA code expects adjacent (use -fno-toplevel-reorder); BG2PA/PD and BG3PA/PD start at 0x100; GBA code writing near NULL crashes the PSP (PPSSPP JIT hides bad reads, use -i); GCC's divide-by-0 trap stops the game where the GBA gives 0 (-mno-check-zero-division; PPSSPP only logs BREAK!); gbaref for reference frames.
