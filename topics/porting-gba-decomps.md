@@ -70,3 +70,14 @@ Traps found while bringing pret's decomps over to the PSP as native code (not em
 - **Confirmed:** Pokémon FireRed PSP, against save-editor offsets (rival name 0x3A4C, second Pokédex
   seen copy 0x3A18 in SaveBlock1).
 - **Found in:** Pokémon FireRed PSP, 2026-10-25.
+
+### Overflows the GBA got away with because of where variables sit
+- **Seen as:** beating Brock in Pokémon FireRed: after his last line the battle never ends, and
+  pressing B whites the player out with no badge.
+- **Cause:** his defeat text (about 386 bytes) overruns `gDisplayedStringBattle[300]`. pret notes
+  that on the GBA it lands in an unused array agbcc places right after it. GCC places static
+  variables elsewhere, so it overwrote `gBattleTypeFlags`.
+- **Workaround:** enlarge the buffer (512) under `UBFIX`. Search the decompilation's comments for
+  "overflow" and "into" notes like this one: each is a bug that only stays harmless with agbcc's
+  variable order.
+- **Found in:** Pokémon FireRed PSP, 2026-10-25.
