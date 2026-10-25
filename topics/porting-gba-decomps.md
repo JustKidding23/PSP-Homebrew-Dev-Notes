@@ -55,3 +55,18 @@ Traps found while bringing pret's decomps over to the PSP as native code (not em
   keep their own traps.
 - **Confirmed:** PSP 3001, 6.61 PRO-C, pspdev GCC 15.2; PPSSPP 1.20 doesn't stop.
 - **Found in:** Pokémon FireRed PSP, 2026-10-23.
+
+### agbcc pads structs that GCC doesn't, and saves notice
+- **Seen as:** nothing in the port itself (it reads what it wrote), but saves don't move to or from a
+  GBA or an emulator intact: everything after a certain field is shifted.
+- **Cause:** agbcc rounds a struct containing a halfword or larger member up to a multiple of 4 bytes
+  (byte-only structs stay as they are). GCC for MIPS doesn't, so a struct like
+  `{ u8 flags[10]; s16 x, y; u8 a[4]; }` (18 bytes) is 20 on the GBA. In Pokémon FireRed the quest
+  log's object events and the Fame Checker's entries moved the save's second half by 160 bytes.
+- **Workaround:** `ALIGNED(4)` on such structs when they're saved, and a build-time
+  `offsetof` check for every field whose GBA offset the decompilation notes in a comment (pret's
+  `/*0x2CA0*/` annotations; one of them, `dewfordTrends`, is wrong in pokefirered). `pahole` on a
+  `-g` build lists sizes and offsets. Convert saves written before the fix.
+- **Confirmed:** Pokémon FireRed PSP, against save-editor offsets (rival name 0x3A4C, second Pokédex
+  seen copy 0x3A18 in SaveBlock1).
+- **Found in:** Pokémon FireRed PSP, 2026-10-25.
